@@ -6,7 +6,7 @@
 
 🎯 本次专栏所有案例都基于 `Vue3 + Vite3 + TypeScript + CesiumJS` 开发，并且所有案列的代码都会统一放到 `github`仓库中，开放给大家 `免费学习`使用
 
-🎯 这里奉上 📚`Github仓库`的地址：`https://github.com/xushanpei/Cesium_Study_Cases`
+🎯 这里奉上 📚[Github 仓库](https://github.com/xushanpei/Cesium_Study_Cases)地址：`https://github.com/xushanpei/Cesium_Study_Cases`
 
 ## CesiumJS 概述
 
@@ -99,10 +99,10 @@ npm i -D vite-plugin-cesium
 `vite.config.ts` 中配置：
 
 ```js
-import cesium from 'vite-plugin-cesium'; // 引入插件
+import cesium from "vite-plugin-cesium"; // 引入插件
 
 export default defineConfig({
-    plugins: [cesium()]
+  plugins: [cesium()],
 });
 ```
 
@@ -149,7 +149,7 @@ npm i -S @types/cesium
 1.在 `src => view` 目录下创建一个 `init.vue` , 初始化出一个组件模板并且引入 `Cesium`
 
 ```js
-import Cesium from "cesium"
+import Cesium from "cesium";
 ```
 
 引入成功后运行发现报错了：
@@ -161,13 +161,13 @@ import Cesium from "cesium"
 - 全量导出，`as` 重命名
 
 ```js
-import * as Cesium from "cesium"
+import * as Cesium from "cesium";
 ```
 
 - 直接 `解构`出需要的模块名称, 不知道什么是解构的建议看看 `es6`
 
 ```js
-import { Viewer } from "cesium"
+import { Viewer } from "cesium";
 ```
 
 2.创建容器，初始化 `Viewer`
@@ -202,7 +202,6 @@ const initViewer = () => {
 ![](https://files.mdnice.com/user/16854/be9ee9dc-3016-453b-b3c5-33c5bccc2f3b.png)
 
 这样一个简单的 cesiumJS 三维数字地球就运行起来了
-
 
 ## 基础要素讲解
 
@@ -265,20 +264,19 @@ const initViewer = () => {
     terrainProvider: new Cesium.EllipsoidTerrainProvider(), //地形图层提供者，仅baseLayerPicker设为false有意义
   });
 ```
+
 虽然 `Cesium` 自带的一些组件`功能`都比较`强大`,但是奈何大多数情况下,我们都需要`重写`这些组件来`适配`我们的`项目`, 所以很多时候都是把这些小组件`隐藏`起来
-
-
 
 ## 修改天空背景(skyBox)
 
-Cesium 自带的天空背景偏黑色,
+`Cesium` 自带的天空盒子背景偏黑色, 天空盒子的贴图是`6`张（也叫立方体贴图），分别对应`6个方向`的星空背景贴图。
 
-天空盒子的制作方法并没有采用上述方法。
+想象一下，一个立方体盒子将`天球`包围，从球心到球面上任意一点的连线延伸出去必然与立方体盒子的一个`面`相交，从而将球面上的一个点映射到立方体的一个面上。最终完整的天球映射到立方体盒子的两个面上，形成`6张`正方形的图片。
 
-想象一下，一个立方体盒子将天球包围，从球心到球面上任意一点的连线延伸出去必然与立方体盒子的一个面相交，从而将球面上的一个点映射到立方体的一个面上。最终完整的天球映射到立方体盒子的两个面上，形成6张正方形的图片。所以说天空盒子的贴图是6张（也叫立方体贴图），分别对应6个方向的星空背景贴图。
-
+把提前准备好的天空盒图片放到 `/public/skyBox` 文件夹下，`Viewer` 中增加如下配置即可：
 
 ```JS
+//用于渲染星空的SkyBox对象
  skyBox: new Cesium.SkyBox({
       sources: {
         positiveX: "/skyBox/00h+00.jpg",
@@ -288,16 +286,71 @@ Cesium 自带的天空背景偏黑色,
         positiveZ: "/skyBox/06h+90.jpg",
         negativeZ: "/skyBox/06h-90.jpg",
       },
-    }), //用于渲染星空的SkyBox对象
+    })
 ```
 
+效果如下展示：
+![](https://files.mdnice.com/user/16854/3eee6605-75ad-4f8b-82f5-a03346249e14.png)
 
-https://blog.csdn.net/qq_21048515/article/details/105686890?spm=1001.2101.3001.6650.7&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-7-105686890-blog-122687181.t0_edu_mlt&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7ERate-7-105686890-blog-122687181.t0_edu_mlt&utm_relevant_index=12
+## 去除版权信息
 
-https://gitee.com/hawk86104/vue3-ts-cesium-map-show
+```js
+viewer.cesiumWidget.creditContainer.style.display = "none";
+```
 
-https://new.qq.com/rain/a/20220816A0A0XK00
+![](https://files.mdnice.com/user/16854/f1fcc2b0-2367-4378-82aa-b3cbc201fb7d.png)
 
-https://blog.csdn.net/u010358183/article/details/121931106
+## 增加太阳光照效果
 
-🔥🔥🔥⭐️
+```JS
+viewer.scene.globe.enableLighting = true;
+```
+
+![](https://files.mdnice.com/user/16854/15b2d27c-7376-4014-b2ee-e2e0bc7202e0.png)
+
+## 实现昼夜联动效果
+
+```js
+// 加载昼夜联动
+const loadEarthAtNight = () => {
+  const dynamicLighting = true;
+  viewer.clock.multiplier = 4000;
+  const imageryLayers = viewer.imageryLayers;
+  const nightLayer = imageryLayers.get(0);
+  const dayLayer = imageryLayers.addImageryProvider(
+    new Cesium.IonImageryProvider({
+      assetId: 3845,
+    })
+  );
+
+  imageryLayers.lowerToBottom(dayLayer);
+  updateLighting(dynamicLighting, nightLayer, dayLayer);
+};
+// 更新光照效果
+const updateLighting = (
+  dynamicLighting: any,
+  nightLayer: any,
+  dayLayer: any
+) => {
+  dayLayer.show = dynamicLighting;
+  viewer.scene.globe.enableLighting = dynamicLighting;
+  viewer.clock.shouldAnimate = dynamicLighting;
+  nightLayer.dayAlpha = dynamicLighting ? 1.0 : 1.0;
+};
+```
+
+🎯 这篇文章是 `Cesium 三维地球可视化从入门到进阶` 专栏的开篇文章，主要是给一些没有接触过 `Cesium` 的并且想要入门三维可视化的同学的一篇入门教程
+
+🎯 在后续的文章中， 将会分享`更多`的`实践案例`，如果你也对 `三维可视化`比较感兴趣的话，欢迎关注我一起学习
+
+🎯 [Github 仓库](https://github.com/xushanpei/Cesium_Study_Cases)地址：`https://github.com/xushanpei/Cesium_Study_Cases`
+
+## 写在最后
+
+> `公众号`：`前端开发爱好者` 专注分享 `web` 前端相关`技术文章`、`视频教程`资源、热点资讯等，如果喜欢我的分享，给 🐟🐟 点一个`赞` 👍 或者 ➕`关注` 都是对我最大的支持。
+
+大家好，我 xy,是一名前端 🤫 爱好：瞎折腾
+
+如果你也是一名瞎折腾的前端欢迎加我微信交流哦...
+
+[🤫 一定要点我](https://juejin.cn/pin/7040966241468547109 "https://juejin.cn/pin/7040966241468547109")

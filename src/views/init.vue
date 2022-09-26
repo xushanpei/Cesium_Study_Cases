@@ -69,11 +69,11 @@ const initViewer = () => {
   });
 
   // // 去除版权信息
-  // //@ts-ignore
-  // viewer.cesiumWidget.creditContainer.style.display = "none";
+  //@ts-ignore
+  viewer.cesiumWidget.creditContainer.style.display = "none";
   // // 增加太阳光照
-  // viewer.scene.globe.enableLighting = true;
-  // loadEarthAtNight();
+  viewer.scene.globe.enableLighting = true;
+  loadEarthAtNight();
 };
 
 // 加载昼夜联动
