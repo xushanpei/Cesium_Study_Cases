@@ -1,4 +1,3 @@
-import cesium from 'vite-plugin-cesium';
 <template>
   <div id="cesiumContainer"></div>
 </template>
@@ -23,9 +22,9 @@ const initViewer = () => {
 };
 </script>
 
-<style scoped>
-  #cesiumContainer{
-    width: 100vw;
-    height: 100vh;
-  }
+<style lang="less" scoped>
+#cesiumContainer {
+  width: 100vw;
+  height: 100vh;
+}
 </style>
