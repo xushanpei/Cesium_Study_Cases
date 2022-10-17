@@ -5,7 +5,7 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
 import * as Cesium from "cesium";
-import TOKEN from "../utils/Token";
+import { TOKEN, TK }from "../utils/Token";
 
 // Token 设置
 Cesium.Ion.defaultAccessToken = TOKEN;
