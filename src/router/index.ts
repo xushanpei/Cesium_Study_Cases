@@ -7,7 +7,12 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: Init
-    }
+    },
+    {
+      path: '/tiles',
+      name: 'tiles',
+      component: () => import('@/views/tiles.vue'),
+    },
   ]
 })
 
