@@ -13,6 +13,11 @@ const router = createRouter({
       name: 'tiles',
       component: () => import('@/views/tiles.vue'),
     },
+    {
+      path: '/shp',
+      name: 'shp',
+      component: () => import('@/views/shp.vue'),
+    },
   ]
 })
 
