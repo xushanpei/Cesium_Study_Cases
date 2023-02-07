@@ -82,8 +82,9 @@ const initViewer = () => {
 
   var tileset = viewer.scene.primitives.add(
     new Cesium.Cesium3DTileset({
-    //   url: "/shp/tileset.json", //数据地址
-      url: "https://lab.earthsdk.com/model/702aa950d03c11e99f7ddd77cbe22fea/tileset.json", //数据地址
+      // url: "https://lab.earthsdk.com/model/702aa950d03c11e99f7ddd77cbe22fea/tileset.json", //数据地址
+      // url:'https://data.mars3d.cn/3dtiles/jzw-shanghai/tileset.json',
+      url:'/shp/tileset.json'
       // maximumScreenSpaceError: 16, //最大的屏幕空间误差
     })
   );
