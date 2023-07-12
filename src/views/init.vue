@@ -5,7 +5,7 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
 import * as Cesium from "cesium";
-import { TOKEN, TK }from "../utils/Token";
+import { TOKEN, TK } from "../utils/Token";
 
 // Token 设置
 Cesium.Ion.defaultAccessToken = TOKEN;
@@ -73,35 +73,97 @@ const initViewer = () => {
   viewer.cesiumWidget.creditContainer.style.display = "none";
   // // 增加太阳光照
   viewer.scene.globe.enableLighting = true;
-  loadEarthAtNight();
+  viewer.scene.globe.depthTestAgainstTerrain = false;
+  // loadEarthAtNight();
+
+  // 绘制空心圆
+  // var entity = viewer.entities.add({
+  //   position: Cesium.Cartesian3.fromDegrees(-75.59777, 40.03883),
+  //   ellipse: {
+  //     semiMinorAxis: 200000.0,
+  //     semiMajorAxis: 200000.0,
+  //     height: 0,
+  //     material: Cesium.Color.RED.withAlpha(0),
+  //     outline: true,
+  //     outlineColor: Cesium.Color.WHITE,
+  //   },
+  // });
+
+  // 绘制3D扇形
+  // var headings = Cesium.Math.toRadians(180);
+  // const entity = viewer.entities.add({
+  //   name: "3D扇形",
+  //   position: Cesium.Cartesian3.fromDegrees(-102.0, 35.0, 20000.0),
+  //   orientation: Cesium.Transforms.headingPitchRollQuaternion(
+  //     Cesium.Cartesian3.fromDegrees(-102.0, 35.0, 20000.0),
+  //     //new Cesium.HeadingPitchRoll(Cesium.Math.PI / 1.5, 0, 0.0)  // 1.5是扇形的朝向
+  //     new Cesium.HeadingPitchRoll(headings, 0, 0.0)
+  //   ),
+  //   ellipsoid: {
+  //     radii: new Cesium.Cartesian3(500000.0, 500000.0, 500000.0), // 扇形半径
+  //     innerRadii: new Cesium.Cartesian3(1.0, 1.0, 1.0), // 内半径
+  //     minimumClock: Cesium.Math.toRadians(-10), // 左右偏角
+  //     maximumClock: Cesium.Math.toRadians(10),
+  //     minimumCone: Cesium.Math.toRadians(80), // 上下偏角  可以都设置为90
+  //     maximumCone: Cesium.Math.toRadians(90),
+  //     material: Cesium.Color.DARKCYAN.withAlpha(0.3),
+  //     outline: true,
+  //   },
+  // });
+
+  // 2d 扇面
+  var headings = Cesium.Math.toRadians(0);
+  const entity = viewer.entities.add({
+    name: "扇面",
+    position: Cesium.Cartesian3.fromDegrees(116, 30.0, 0),
+    orientation: Cesium.Transforms.headingPitchRollQuaternion(
+      Cesium.Cartesian3.fromDegrees(116, 30, 20000.0),
+      //new Cesium.HeadingPitchRoll(Cesium.Math.PI / 1.5, 0, 0.0)  // 1.5是扇形的朝向
+      new Cesium.HeadingPitchRoll(headings, 0, 0.0)
+    ),
+    ellipsoid: {
+      radii: new Cesium.Cartesian3(5000.0, 5000.0, 5000.0), // 扇形半径
+      innerRadii: new Cesium.Cartesian3(1.0, 1.0, 1.0), // 内半径
+      minimumClock: Cesium.Math.toRadians(-20), // 左右偏角
+      maximumClock: Cesium.Math.toRadians(20),
+      // 上下偏角  可以都设置为90
+      // 利用上下偏角控制是3d扇形还是平面扇形
+      minimumCone: Cesium.Math.toRadians(90), // 最小圆锥角
+      maximumCone: Cesium.Math.toRadians(90), // 最大圆锥角
+      material: Cesium.Color.DARKCYAN.withAlpha(0.3),
+      outline: true,
+      outlineColor: Cesium.Color.WHITE,
+    },
+  });
+  viewer.zoomTo(entity);
 };
 
 // 加载昼夜联动
-const loadEarthAtNight = () => {
-  const dynamicLighting = true;
-  viewer.clock.multiplier = 4000;
-  const imageryLayers = viewer.imageryLayers;
-  const nightLayer = imageryLayers.get(0);
-  const dayLayer = imageryLayers.addImageryProvider(
-    new Cesium.IonImageryProvider({
-      assetId: 3845,
-    })
-  );
+// const loadEarthAtNight = () => {
+//   const dynamicLighting = true;
+//   viewer.clock.multiplier = 4000;
+//   const imageryLayers = viewer.imageryLayers;
+//   const nightLayer = imageryLayers.get(0);
+//   const dayLayer = imageryLayers.addImageryProvider(
+//     new Cesium.IonImageryProvider({
+//       assetId: 3845,
+//     })
+//   );
 
-  imageryLayers.lowerToBottom(dayLayer);
-  updateLighting(dynamicLighting, nightLayer, dayLayer);
-};
-// 更新光照效果
-const updateLighting = (
-  dynamicLighting: any,
-  nightLayer: any,
-  dayLayer: any
-) => {
-  dayLayer.show = dynamicLighting;
-  viewer.scene.globe.enableLighting = dynamicLighting;
-  viewer.clock.shouldAnimate = dynamicLighting;
-  nightLayer.dayAlpha = dynamicLighting ? 1.0 : 1.0;
-};
+//   imageryLayers.lowerToBottom(dayLayer);
+//   updateLighting(dynamicLighting, nightLayer, dayLayer);
+// };
+// // 更新光照效果
+// const updateLighting = (
+//   dynamicLighting: any,
+//   nightLayer: any,
+//   dayLayer: any
+// ) => {
+//   dayLayer.show = dynamicLighting;
+//   viewer.scene.globe.enableLighting = dynamicLighting;
+//   viewer.clock.shouldAnimate = dynamicLighting;
+//   nightLayer.dayAlpha = dynamicLighting ? 1.0 : 1.0;
+// };
 </script>
 
 <style lang="less" scoped>
