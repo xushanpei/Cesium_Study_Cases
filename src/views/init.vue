@@ -25,14 +25,14 @@ const initViewer = () => {
     vrButton: true, // 用于切换 VR 模式的单个按钮小部件。
     geocoder: true, // //是否显示geocoder小器件，右上角查询按钮
     homeButton: true, //是否显示Home按钮
-    infoBox: true, //是否显示信息框
+    infoBox: false, //是否显示信息框
     sceneModePicker: true, //是否显示3D/2D选择器
     selectionIndicator: true, //是否显示选取指示器组件
     timeline: true, //是否显示时间轴
     navigationHelpButton: true, //是否显示右上角的帮助按钮
     navigationInstructionsInitiallyVisible: true,
     scene3DOnly: false, //如果设置为true，则所有几何图形以3D模式绘制以节约GPU资源
-    shouldAnimate: false, // 初始化是否开始动画
+    shouldAnimate: true, // 初始化是否开始动画
     clockViewModel: undefined, // 一个视图模型，它为用户界面提供 Clock
     selectedImageryProviderViewModel: undefined, //当前图像图层的显示模型，仅baseLayerPicker设为true有意义
     selectedTerrainProviderViewModel: undefined, //当前地形图层的显示模型，仅baseLayerPicker设为true有意义
@@ -75,6 +75,19 @@ const initViewer = () => {
   viewer.scene.globe.enableLighting = true;
   viewer.scene.globe.depthTestAgainstTerrain = false;
   // loadEarthAtNight();
+
+  viewer.scene.fxaa = false;
+  viewer.scene.postProcessStages.fxaa.enabled = false;
+
+  var supportsImageRenderingPixelated =
+    viewer.cesiumWidget._supportsImageRenderingPixelated;
+  if (supportsImageRenderingPixelated) {
+    var vtxf_dpr = window.devicePixelRatio;
+    while (vtxf_dpr >= 2.0) {
+      vtxf_dpr /= 2.0;
+    }
+    viewer.resolutionScale = vtxf_dpr;
+  }
 
   // 绘制空心圆
   // var entity = viewer.entities.add({
@@ -136,6 +149,59 @@ const initViewer = () => {
     },
   });
   viewer.zoomTo(entity);
+
+  // var modal = viewer.entities.add({
+  //   name: '模型',
+  //   position: Cesium.Cartesian3.fromDegrees(116, 30.0, 0),
+  //   orientation: Cesium.Transforms.headingPitchRollQuaternion(
+  //     Cesium.Cartesian3.fromDegrees(116, 30, 20000.0),
+  //     //new Cesium.HeadingPitchRoll(Cesium.Math.PI / 1.5, 0, 0.0)  // 1.5是扇形的朝向
+  //     new Cesium.HeadingPitchRoll(headings, 0, 0.0)
+  //   ),
+  //   modal:{
+  //     url: 'http://8.142.144.242:888/mainbody/重点区域/出租车辆上落客区/XA000_XAZF_A_出租车辆上落客区.gltf',//注意entitits.add方式加载gltf文件时，这里是uri，不是url，并且这种方式只能加载.glb格式的文件
+  //     scale: 1.0,//缩放比例
+  //     minimumPixelSize: 128,//最小像素大小，可以避免太小看不见
+  //     maximumScale: 20000,//模型的最大比例尺大小。minimumPixelSize的上限
+  //     incrementallyLoadTextures: true,//加载模型后纹理是否可以继续流入
+  //     runAnimations: true,//是否启动模型中制定的gltf动画
+  //     clampAnimations: true,//制定gltf动画是否在没有关键帧的持续时间内保持最后一个姿势
+  //     shadows: Cesium.ShadowMode.ENABLED,
+  //     heightReference: Cesium.HeightReference.NONE
+  //   }
+  // })
+
+  // viewer.zoomTo(modal);
+
+  // viewer.entities.removeAll();
+
+  const position = Cesium.Cartesian3.fromDegrees(
+    -123.0744619,
+    44.0503706,
+    5000
+  );
+  const heading = Cesium.Math.toRadians(135);
+  const pitch = 0;
+  const roll = 0;
+  const hpr = new Cesium.HeadingPitchRoll(heading, pitch, roll);
+  const orientation = Cesium.Transforms.headingPitchRollQuaternion(
+    position,
+    hpr
+  );
+
+  const entityModal = viewer.entities.add({
+    name: "模型",
+    position: position,
+    orientation: orientation,
+    model: {
+      uri: "http://8.142.144.242:888/mainbody/重点区域/出租车辆上落客区/XA000_XAZF_A_出租车辆上落客区.gltf",
+      minimumPixelSize: 0,
+      maximumScale: 20000,
+      // shadows: Cesium.ShadowMode.CAST_ONLY
+    },
+  });
+  viewer.trackedEntity = entityModal;
+
 };
 
 // 加载昼夜联动
